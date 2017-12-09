@@ -1,11 +1,6 @@
 {
-  "name": "hax-app",
-  "short_name": "hax-app",
-  "title": "New app",
-  "description": "A new app",
-  "start_url": "/",
-  "display": "standalone",
-  "icons": [
+ "name": "App",
+ "icons": [
   {
    "src": "\/android-icon-36x36.png",
    "sizes": "36x36",
@@ -41,21 +36,6 @@
    "sizes": "192x192",
    "type": "image\/png",
    "density": "4.0"
-  }],
-  "background_color": "#fff",
-  "theme_color": "#fff",
-  "app_integration": {
-    "title": "Boiler Plate App",
-    "menu": {
-      "menu_name": "menu-elmsln-navigation",
-      "weight": 10
-    },
-    "endpoints": {
-      "data": {
-        "callback": "_boiler_plate_app_data",
-        "property": "source-path"
-      }
-    }
   }
+ ]
 }
-
