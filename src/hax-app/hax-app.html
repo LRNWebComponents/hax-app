@@ -1,15 +1,15 @@
-<link rel="import" href="imports.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/hax-body/hax-store.html">
+<link rel="import" href="../../bower_components/hax-body/hax-autoloader.html">
+<link rel="import" href="../../bower_components/hax-body/hax-source.html">
+<link rel="import" href="../../bower_components/hax-body/hax-manager.html">
+<link rel="import" href="../../bower_components/hax-body/hax-panel.html">
+<link rel="import" href="../../bower_components/hax-body/hax-body.html">
+<link rel="import" href="../../bower_components/hax-body/hax-export-dialog.html">
 
 <!--
 `hax-app`
-A LRN polymer app
-
-@demo ../../demo/index.html
-
-@microcopy - the mental model for this app
- -
- -
- -
+An example HAX app
 
 -->
 
@@ -17,30 +17,140 @@ A LRN polymer app
   <template>
     <style>
       :host {
-        display: block;
+        display:block;
       }
-      paper-button {
-        padding: 0;
-        margin: 0;
-        min-width: 1rem;
+      hax-panel {
+        font-size: .8rem;
+      }
+      hax-panel {
+      --app-drawer-content-container: {
+          background-color: #fafafa;
+          padding: 0;
+          border-right: 1px solid #c8c8c8;
+          border-bottom: 1px solid #c8c8c8;
+          width: 100px !important;
+          box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+          height: 100vh;
+          position: fixed;
+        }
+      }
+      lrnsys-collapselist-item .label {
+        text-align: center;
       }
     </style>
-    <paper-button raised>Hello world!</paper-button>
+    <hax-store></hax-store>
+    <hax-autoloader>
+      <video-player></video-player>
+      <wikipedia-query></wikipedia-query>
+      <pdf-element></pdf-element>
+      <lrn-table></lrn-table>
+      <media-image></media-image>
+    </hax-autoloader>
+    <hax-export-dialog></hax-export-dialog>
+    <hax-manager>
+      <hax-source
+        details='{
+        "title":"Youtube",
+        "icon":"av:play-arrow",
+        "color":"red",
+        "author": "Google, Youtube LLC",
+        "teaser": "Popular public video solution",
+        "description": "Remember that anything you place here though will be out in the open. Great for OER.",
+        "status": "available"
+        }'
+        request-end-point="https://www.googleapis.com/youtube/v3/search"
+        request-params="[[__youtubeParams]]"
+        query-param="q"
+        response-map='{
+          "root": "items",
+          "gizmoType": "video",
+          "url": "https://www.youtube.com/watch?v=",
+          "id": "id.videoId",
+          "title": "snippet.title",
+          "description": "snippet.description",
+          "image": "snippet.thumbnails.high.url"}'></hax-source>
+      <hax-source
+        details='{
+        "title":"Vimeo",
+        "icon":"av:play-circle-filled",
+        "color":"blue",
+        "author": "Vimeo Inc.",
+        "teaser": "Popular video community",
+        "description": "Vimeo is a great place for artists and higher quality video. There is also the ability to have more control over the storage and delivery of media as needed.",
+        "status": "available"
+        }'
+        request-end-point="https://api.vimeo.com/videos"
+        request-params="[[__vimeoParams]]"
+        query-param="query"
+        response-map='{
+          "root": "data",
+          "gizmoType": "video",
+          "url": "",
+          "id": "link",
+          "title": "name",
+          "description": "description",
+          "image": "pictures.sizes.1.link"}'></hax-source>
+    </hax-manager>
+    <hax-body context-offset-left="[[contextOffsetLeft]]">
+      <slot></slot>
+    </hax-body>
+    <hax-panel></hax-panel>
   </template>
 
   <script>
     Polymer({
       is: 'hax-app',
       properties: {
+        /**
+         * Youtube API key
+         */
+        youtubeKey: {
+          type: String,
+          observer: '_youtubeKeyChanged',
+        },
+        /**
+         * Vimeo API token
+         */
+        vimeoKey: {
+          type: String,
+          observer: '_vimeoKeyChanged',
+        },
+        /**
+         * Offset value passed down into the body.
+         */
+        contextOffsetLeft: {
+          type: Number,
+        },
       },
       /**
-       * Simple way to convert from object to array.
+       * Build params when key changes.
        */
-      _toArray: function(obj) {
-        return Object.keys(obj).map(function(key) {
-          return obj[key];
-        });
+      _youtubeKeyChanged : function(newValue, oldValue) {
+        if (typeof newValue !== typeof undefined) {
+          this.__youtubeParams = {
+            "part":"snippet",
+            "q":"",
+            "key": newValue,
+            "type": "video",
+            "maxResults":"12"
+          };
+        }
       },
+      /**
+       * Build params when key changes.
+       */
+      _vimeoKeyChanged : function(newValue, oldValue) {
+        if (typeof newValue !== typeof undefined) {
+          this.__vimeoParams = {
+            "access_token": newValue,
+            "query": "",
+            "direction": "asc",
+            "sort": "alphabetical",
+            "filter": "CC",
+            "per_page":"12"
+          };
+        }
+      }
     });
   </script>
 </dom-module>
